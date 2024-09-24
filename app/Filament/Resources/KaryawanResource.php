@@ -16,6 +16,7 @@ use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\KaryawanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\KaryawanResource\RelationManagers;
+use Filament\Infolists\Components\Section;
 
 class KaryawanResource extends Resource
 {
@@ -219,32 +220,35 @@ class KaryawanResource extends Resource
     {
         return $infolist
             ->schema([
-                TextEntry::make('Nama')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
-                TextEntry::make('NIK'),
-                TextEntry::make('Status_Karyawan'),
-                TextEntry::make('Jenis_Kelamin'),
-                TextEntry::make('Status_Perkawinan'),
-                TextEntry::make('Tanggal_masuk'),
-                TextEntry::make('Tanggal_lahir'),
-                TextEntry::make('Tempat_lahir'),
-                TextEntry::make('Departemen'),
-                TextEntry::make('lokasi.nama_lokasi'),
-                TextEntry::make('Jabatan'),
-                TextEntry::make('Tugas_Jabatan'),
-                TextEntry::make('Jenjang_pendidikan'),
-                TextEntry::make('Jurusan_pendidikan'),
-                TextEntry::make('Tahun_lulus'),
-                TextEntry::make('Nama_sekolah'),
-                TextEntry::make('Alamat'),
-                TextEntry::make('No_HP'),
-                TextEntry::make('NIK_KTP'),
-                TextEntry::make('no_kk'),
-                TextEntry::make('npwp'),
-                TextEntry::make('Email'),
-                TextEntry::make('Agama'),
-                TextEntry::make('gol_darah'),
-                IconEntry::make('is_active')
-                    ->boolean(),
-            ])->columns(4);
+                Section::make()
+                    ->schema([
+                        TextEntry::make('Nama')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                        TextEntry::make('NIK'),
+                        TextEntry::make('Status_Karyawan'),
+                        TextEntry::make('Jenis_Kelamin'),
+                        TextEntry::make('Status_Perkawinan'),
+                        TextEntry::make('Tanggal_masuk'),
+                        TextEntry::make('Tanggal_lahir'),
+                        TextEntry::make('Tempat_lahir'),
+                        TextEntry::make('Departemen'),
+                        TextEntry::make('lokasi.nama_lokasi'),
+                        TextEntry::make('Jabatan'),
+                        TextEntry::make('Tugas_Jabatan'),
+                        TextEntry::make('Jenjang_pendidikan'),
+                        TextEntry::make('Jurusan_pendidikan'),
+                        TextEntry::make('Tahun_lulus'),
+                        TextEntry::make('Nama_sekolah'),
+                        TextEntry::make('Alamat'),
+                        TextEntry::make('No_HP'),
+                        TextEntry::make('NIK_KTP'),
+                        TextEntry::make('no_kk'),
+                        TextEntry::make('npwp'),
+                        TextEntry::make('Email'),
+                        TextEntry::make('Agama'),
+                        TextEntry::make('gol_darah'),
+                        IconEntry::make('is_active')
+                            ->boolean(),
+                    ])->columns(4)
+            ]);
     }
 }

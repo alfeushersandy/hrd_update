@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Karyawan;
@@ -9,16 +10,20 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Filament\Infolists\Components\Split;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ImageEntry;
 use App\Filament\Resources\KaryawanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\KaryawanResource\RelationManagers;
-use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\Actions;
+use Filament\Infolists\Components\Actions\Action;
 
-class KaryawanResource extends Resource
+class KaryawanResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Karyawan::class;
 
@@ -189,8 +194,20 @@ class KaryawanResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->hiddenLabel(),
+                Tables\Actions\EditAction::make()->hiddenLabel(),
+                Tables\Actions\Action::make('open_pdf')
+                    ->hiddenLabel()
+                    ->icon('heroicon-o-document-text') // Ikon opsional
+                    ->url(function ($record) {
+                        // Buat URL file PDF
+                        return asset('storage/' . $record->Berkas);
+                    })
+                    ->openUrlInNewTab() // Buka URL di tab baru
+                    ->visible(function () {
+                        // Cek apakah user punya izin "view_pdf"
+                        return auth()->user()->can('view_berkas_karyawan');
+                    }), //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -220,35 +237,73 @@ class KaryawanResource extends Resource
     {
         return $infolist
             ->schema([
-                Section::make()
-                    ->schema([
-                        TextEntry::make('Nama')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
-                        TextEntry::make('NIK'),
-                        TextEntry::make('Status_Karyawan'),
-                        TextEntry::make('Jenis_Kelamin'),
-                        TextEntry::make('Status_Perkawinan'),
-                        TextEntry::make('Tanggal_masuk'),
-                        TextEntry::make('Tanggal_lahir'),
-                        TextEntry::make('Tempat_lahir'),
-                        TextEntry::make('Departemen'),
-                        TextEntry::make('lokasi.nama_lokasi'),
-                        TextEntry::make('Jabatan'),
-                        TextEntry::make('Tugas_Jabatan'),
-                        TextEntry::make('Jenjang_pendidikan'),
-                        TextEntry::make('Jurusan_pendidikan'),
-                        TextEntry::make('Tahun_lulus'),
-                        TextEntry::make('Nama_sekolah'),
-                        TextEntry::make('Alamat'),
-                        TextEntry::make('No_HP'),
-                        TextEntry::make('NIK_KTP'),
-                        TextEntry::make('no_kk'),
-                        TextEntry::make('npwp'),
-                        TextEntry::make('Email'),
-                        TextEntry::make('Agama'),
-                        TextEntry::make('gol_darah'),
-                        IconEntry::make('is_active')
-                            ->boolean(),
-                    ])->columns(4)
+                Split::make([
+                    Section::make('Profile')
+                        ->schema([
+                            ImageEntry::make('Foto')
+                                ->hiddenLabel()
+                        ])->grow(false),
+                    Section::make('Detail Karyawan')
+                        ->schema([
+                            TextEntry::make('Nama')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('NIK')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold)->label('NIK'),
+                            TextEntry::make('Status_Karyawan')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Jenis_Kelamin')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Status_Perkawinan')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Tanggal_masuk')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Tanggal_lahir')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Tempat_lahir')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Departemen')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('lokasi.nama_lokasi')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Jabatan')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Tugas_Jabatan')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Jenjang_pendidikan')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Jurusan_pendidikan')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Tahun_lulus')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Nama_sekolah')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Alamat')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('No_HP')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold)->label('NO HP'),
+                            TextEntry::make('NIK_KTP')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold)->label('NIK KTP'),
+                            TextEntry::make('no_kk')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold)->label('NO KK'),
+                            TextEntry::make('npwp')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Email')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('Agama')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            TextEntry::make('gol_darah')->size(TextEntry\TextEntrySize::Large)->weight(FontWeight::Bold),
+                            IconEntry::make('is_active')
+                                ->boolean(),
+                            Actions::make([
+                                Action::make('Berkas')
+                                    ->icon('heroicon-o-document-text') // Ikon opsional
+                                    ->url(function ($record) {
+                                        // Buat URL file PDF
+                                        return asset('storage/' . $record->Berkas);
+                                    })
+                                    ->openUrlInNewTab() // Buka URL di tab baru
+                            ])->visible(function () {
+                                // Cek apakah user punya izin "view_pdf"
+                                return auth()->user()->can('view_berkas_karyawan');
+                            }), //
+                        ])->columns(3)
+                ])->columnSpanFull()
             ]);
+    }
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'restore',
+            'restore_any',
+            'replicate',
+            'reorder',
+            'delete',
+            'delete_any',
+            'force_delete',
+            'force_delete_any',
+            'view_berkas'
+        ];
     }
 }

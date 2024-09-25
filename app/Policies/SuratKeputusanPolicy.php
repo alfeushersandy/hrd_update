@@ -63,7 +63,7 @@ class SuratkeputusanPolicy
      */
     public function forceDelete(User $user, Suratkeputusan $suratkeputusan): bool
     {
-        return $user->can('force_delete_suratkeputusan');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class SuratkeputusanPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_suratkeputusan');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class SuratkeputusanPolicy
      */
     public function restore(User $user, Suratkeputusan $suratkeputusan): bool
     {
-        return $user->can('restore_suratkeputusan');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class SuratkeputusanPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_suratkeputusan');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class SuratkeputusanPolicy
      */
     public function replicate(User $user, Suratkeputusan $suratkeputusan): bool
     {
-        return $user->can('replicate_suratkeputusan');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,11 @@ class SuratkeputusanPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_suratkeputusan');
+        return $user->can('{{ Reorder }}');
+    }
+
+    public function view_berkas(User $user)
+    {
+        return $user->can('view_berkas_suratkeputusan');
     }
 }

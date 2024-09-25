@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SuratkeputusanResource\Pages;
 use App\Filament\Resources\SuratkeputusanResource\RelationManagers;
 use App\Models\Suratkeputusan;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,7 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class SuratkeputusanResource extends Resource
+class SuratkeputusanResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Suratkeputusan::class;
 
@@ -63,6 +64,18 @@ class SuratkeputusanResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('open_pdf')
+                    ->label('Berkas')
+                    ->icon('heroicon-o-document-text') // Ikon opsional
+                    ->url(function ($record) {
+                        // Buat URL file PDF
+                        return asset('storage/' . $record->uploaded_file);
+                    })
+                    ->openUrlInNewTab() // Buka URL di tab baru
+                    ->visible(function () {
+                        // Cek apakah user punya izin "view_pdf"
+                        return auth()->user()->can('view_berkas_form');
+                    }), //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -75,6 +88,19 @@ class SuratkeputusanResource extends Resource
     {
         return [
             'index' => Pages\ManageSuratkeputusans::route('/'),
+        ];
+    }
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'view_berkas'
         ];
     }
 }

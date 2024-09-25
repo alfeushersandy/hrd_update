@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\SopResource\Pages;
 use App\Filament\Resources\SopResource\RelationManagers;
 use App\Models\Sop;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,7 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class SopResource extends Resource
+class SopResource extends Resource implements HasShieldPermissions
 {
     protected static ?string $model = Sop::class;
 
@@ -61,6 +62,18 @@ class SopResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('open_pdf')
+                    ->label('Berkas')
+                    ->icon('heroicon-o-document-text') // Ikon opsional
+                    ->url(function ($record) {
+                        // Buat URL file PDF
+                        return asset('storage/' . $record->uploaded_file);
+                    })
+                    ->openUrlInNewTab() // Buka URL di tab baru
+                    ->visible(function () {
+                        // Cek apakah user punya izin "view_pdf"
+                        return auth()->user()->can('view_berkas_sop');
+                    }), //
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -73,6 +86,19 @@ class SopResource extends Resource
     {
         return [
             'index' => Pages\ManageSops::route('/'),
+        ];
+    }
+
+    public static function getPermissionPrefixes(): array
+    {
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'delete',
+            'delete_any',
+            'view_berkas'
         ];
     }
 }

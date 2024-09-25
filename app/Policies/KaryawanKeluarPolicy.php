@@ -105,4 +105,9 @@ class KaryawankeluarPolicy
     {
         return $user->can('reorder_karyawankeluar');
     }
+
+    public function view_berkas(User $user)
+    {
+        return $user->can('view_berkas_karyawankeluar');
+    }
 }

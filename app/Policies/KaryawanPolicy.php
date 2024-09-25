@@ -105,4 +105,15 @@ class KaryawanPolicy
     {
         return $user->can('reorder_karyawan');
     }
+
+    /**
+     * Determine whether the user can publish posts.
+     *
+     * @param  \App\Models\User  $admin
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function view_berkas(User $user)
+    {
+        return $user->can('view_berkas_karyawan');
+    }
 }

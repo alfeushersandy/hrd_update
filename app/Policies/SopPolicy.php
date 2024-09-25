@@ -63,7 +63,7 @@ class SopPolicy
      */
     public function forceDelete(User $user, Sop $sop): bool
     {
-        return $user->can('force_delete_sop');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -71,7 +71,7 @@ class SopPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_sop');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -79,7 +79,7 @@ class SopPolicy
      */
     public function restore(User $user, Sop $sop): bool
     {
-        return $user->can('restore_sop');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -87,7 +87,7 @@ class SopPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_sop');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -95,7 +95,7 @@ class SopPolicy
      */
     public function replicate(User $user, Sop $sop): bool
     {
-        return $user->can('replicate_sop');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -103,6 +103,11 @@ class SopPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_sop');
+        return $user->can('{{ Reorder }}');
+    }
+
+    public function view_berkas(User $user)
+    {
+        return $user->can('view_berkas_sop');
     }
 }

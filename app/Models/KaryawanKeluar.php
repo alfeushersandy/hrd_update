@@ -12,6 +12,6 @@ class KaryawanKeluar extends Model
     protected $guarded = [];
     public function karyawan()
     {
-        return $this->belongsTo(karyawan::class, 'karyawans_id', 'id');
+        return $this->belongsTo(Karyawan::class, 'karyawans_id', 'id');
     }
 }
